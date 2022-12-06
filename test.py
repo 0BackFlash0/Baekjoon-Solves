@@ -1,53 +1,103 @@
-
-from copy import deepcopy
-
-def DFS(_graph_list, start):
-    graph_list = deepcopy(_graph_list)
-
-    search_list = [start]
-    result = []
-    while(len(search_list)>0):
-        current = search_list.pop()
-        current_node = graph_list[current]
-        if(not current_node[0]):
-            current_node[0] = True
-            result.append(current+1)
-            for next_node in sorted(current_node[1], reverse=True):
-                if(graph_list[next_node][0]==False):
-                    search_list.append(next_node)
-
-    return result
-
-def BFS(_graph_list, start):
-    graph_list = deepcopy(_graph_list)
-    search_list = [start]
-    result = []
-    while(len(search_list)>0):
-        current = search_list.pop(0)
-        current_node = graph_list[current]
-        if(not current_node[0]):
-            current_node[0] = True
-            result.append(current+1)
-            for next_node in sorted(current_node[1]):
-                if(graph_list[next_node][0]==False):
-                    search_list.append(next_node)
-
-    return result
+# import sys
+# input = sys.stdin.buffer.readline
 
 
-n, m, start = map(int, input().split())
+def mergeSort(sort_list):
+    
+    def divide(start, end):
+        if(end-start<2):
+            return
+        
+        mid = (start+end)//2
 
-graph_list = [[False, []] for _ in range(n)]
-# 현재 값 (인덱스)
-# 방문 여부 (True/False)
-# 다음 방문 (인덱스들)
+        divide(start, mid)
+        divide(mid, end)
 
-for _ in range(m):
-    s, e = map(int, input().split())
+        merge(start, mid, end)
+    
+    
+    def merge (start, mid, end):
+        temp_list = []
+        i = start
+        j = mid
 
-    graph_list[s-1][1].append(e-1)
-    graph_list[e-1][1].append(s-1)
-    # 인덱스로 계산하기 때문에 1씩 제외하고 
+        while(i<mid and j<end):
+            if(sort_list[i]<sort_list[j]):
+                temp_list.append(sort_list[i])
+                i += 1
+            else:
+                temp_list.append(sort_list[j])
+                j += 1
 
-print(" ".join(map(str, DFS(graph_list, start-1))))
-print(" ".join(map(str, BFS(graph_list, start-1))))
+        while (i<mid):
+            temp_list.append(sort_list[i])
+            i += 1
+        while (j<end):
+            temp_list.append(sort_list[j])
+            j += 1
+
+        for k in range(0, len(temp_list)):
+            sort_list[start+k] = temp_list[k]
+            
+            
+    return divide(0, len(sort_list))
+
+
+def statistics(sorted_list):
+    # 순회를 하지 않고 구할 수 있는 중앙값, 범위
+    median = sorted_list[len(sorted_list)//2]
+    radius = sorted_list[-1] - sorted_list[0]
+
+    # 빈도를 계산하기 위해 첫번째 항목은 외부에서 계산
+    first_obj = sorted_list[0]
+
+    avg = first_obj
+    mode_list = [first_obj]
+    max_frequency = 0
+    frequency = 1
+    pre_elem = first_obj
+
+    for e in sorted_list[1:]:
+        avg += e
+
+        if(pre_elem==e):
+            frequency += 1
+        else:
+            if(frequency>max_frequency):
+                mode_list = [pre_elem]
+                max_frequency=frequency
+            elif(frequency==max_frequency):
+                mode_list.append(pre_elem)
+            frequency = 1
+            pre_elem = e
+
+    
+    if(frequency>max_frequency):
+        mode_list = [pre_elem]
+        max_frequency=frequency
+    elif(frequency==max_frequency):
+        mode_list.append(pre_elem)
+    
+    avg = round(avg/len(sorted_list))
+    mode = mode_list[0] if len(mode_list)==1 else mode_list[1]
+
+    return avg, median, mode, radius
+
+
+import sys
+
+n = int(sys.stdin.readline())
+
+num_list = []
+for _ in range(n):
+    num_list.append(int(sys.stdin.readline()))
+
+mergeSort(num_list)
+
+print(*statistics(num_list), sep="\n")
+# 산술 평균
+# 중앙값
+# 최빈값
+# 범위
+
+# 정렬 -> 범위, 중앙값 해결
