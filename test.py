@@ -1,103 +1,37 @@
+import math
 # import sys
 # input = sys.stdin.buffer.readline
 
+##평균 길이 구하기.
 
-def mergeSort(sort_list):
+##모자란 길이 구하기.
+
+def div_lan(lan_list, n, k):
+    lan_list.sort(reverse=True)
+
+    start_divisor = math.ceil(k/n)
+    #현재까지 가능한 pivot값들 중 가장 큰 값
+    start_pivot = lan_list[0]//math.ceil(k/n)
+    max_pivot = 0
+    for lan in lan_list:
+        #start_divisor에서부터 k+1까지 반복한다.
+        if(lan//start_pivot==0):
+            break
+        for div in range(lan//start_pivot, k+1):
+            pivot = lan//div
+            total_lan = sum(map(lambda s : s//pivot, lan_list))
+            if(total_lan==k):
+                return pivot
+            elif(total_lan>k):
+                if(max_pivot<pivot):
+                    max_pivot = pivot
+                    start_pivot = max_pivot
+                break
+    return max_pivot
     
-    def divide(start, end):
-        if(end-start<2):
-            return
-        
-        mid = (start+end)//2
-
-        divide(start, mid)
-        divide(mid, end)
-
-        merge(start, mid, end)
     
-    
-    def merge (start, mid, end):
-        temp_list = []
-        i = start
-        j = mid
 
-        while(i<mid and j<end):
-            if(sort_list[i]<sort_list[j]):
-                temp_list.append(sort_list[i])
-                i += 1
-            else:
-                temp_list.append(sort_list[j])
-                j += 1
+n, k = map(int, input().split())
+lan_list = [int(input()) for _ in range(n)]
 
-        while (i<mid):
-            temp_list.append(sort_list[i])
-            i += 1
-        while (j<end):
-            temp_list.append(sort_list[j])
-            j += 1
-
-        for k in range(0, len(temp_list)):
-            sort_list[start+k] = temp_list[k]
-            
-            
-    return divide(0, len(sort_list))
-
-
-def statistics(sorted_list):
-    # 순회를 하지 않고 구할 수 있는 중앙값, 범위
-    median = sorted_list[len(sorted_list)//2]
-    radius = sorted_list[-1] - sorted_list[0]
-
-    # 빈도를 계산하기 위해 첫번째 항목은 외부에서 계산
-    first_obj = sorted_list[0]
-
-    avg = first_obj
-    mode_list = [first_obj]
-    max_frequency = 0
-    frequency = 1
-    pre_elem = first_obj
-
-    for e in sorted_list[1:]:
-        avg += e
-
-        if(pre_elem==e):
-            frequency += 1
-        else:
-            if(frequency>max_frequency):
-                mode_list = [pre_elem]
-                max_frequency=frequency
-            elif(frequency==max_frequency):
-                mode_list.append(pre_elem)
-            frequency = 1
-            pre_elem = e
-
-    
-    if(frequency>max_frequency):
-        mode_list = [pre_elem]
-        max_frequency=frequency
-    elif(frequency==max_frequency):
-        mode_list.append(pre_elem)
-    
-    avg = round(avg/len(sorted_list))
-    mode = mode_list[0] if len(mode_list)==1 else mode_list[1]
-
-    return avg, median, mode, radius
-
-
-import sys
-
-n = int(sys.stdin.readline())
-
-num_list = []
-for _ in range(n):
-    num_list.append(int(sys.stdin.readline()))
-
-mergeSort(num_list)
-
-print(*statistics(num_list), sep="\n")
-# 산술 평균
-# 중앙값
-# 최빈값
-# 범위
-
-# 정렬 -> 범위, 중앙값 해결
+print(div_lan(lan_list, n, k))
