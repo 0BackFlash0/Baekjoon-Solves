@@ -1,24 +1,19 @@
-import math
+def clockwise(a, b, c):
+    v1 = [a[0]-b[0], a[1]-b[1]]
+    v2 = [c[0]-b[0], c[1]-b[1]]
 
-def clear_snow(_snow_list):
-    snow_list = _snow_list
+    cross_product_z = v1[0]*v2[1] - v1[1]*v2[0]
 
-    max_snow = max(snow_list)
-    rest_snow = sum(snow_list)-max_snow
-    result = 0
-
-    if(max_snow>rest_snow):
-        result = max_snow
-    else:
-        result = math.ceil((rest_snow - max_snow)/2) + max_snow
-
-    if(result>1440):
+    if(cross_product_z>0):
         return -1
+    elif(cross_product_z==0):
+        return 0
     else:
-        return result
+        return 1
 
 
-n = int(input())
-snow_list = list(map(int, input().split()))
+a = list(map(int, input().split()))
+b = list(map(int, input().split()))
+c = list(map(int, input().split()))
 
-print(clear_snow(snow_list))
+print(clockwise(a, b, c))
