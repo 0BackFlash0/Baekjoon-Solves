@@ -1,36 +1,28 @@
-def calc_stat(students, team_num, stat_sum):
-    mid = team_num * stat_sum // 2
-
-    sums = [[] for _ in range(team_num)]
-
-    for stat in students:
-
-        for s in range(0, team_num-1):
-
-            for n in sums[s+1]:
-                sum_stat = n + stat
-                if(sum_stat not in sums[s]):
-                    sums[s].append(sum_stat)
-
-        if(stat not in sums[team_num-1]):
-            sums[team_num-1].append(stat)
-
-    min = abs(sums[0][0] - mid)
-    for stat_sums in sums[0]:
-        tmp = abs(stat_sums - mid)
-        if(tmp<min):
-            min = tmp
-
-    return (min+mid) ** 2
+import sys
+input = sys.stdin.readline
+import math
 
 
-n, team_num, stat_sum = map(int, input().split())
+def find_prime_2n(n):
 
-students = []
-for _ in range(n):
-    students.append(int(input().split()[0]))
+    is_prime_list = [1 for _ in range(2*n + 1)]
+    is_prime_list[0] = 0
+    is_prime_list[1] = 0
 
-print(calc_stat(students, team_num, stat_sum))
+    for i in range(2, int(math.sqrt(2*n))+1):
+
+        if(is_prime_list[i]==1):
+
+            for not_prime in range(i*i, 2*n+1, i):
+                is_prime_list[not_prime] = 0
+
+    return sum(is_prime_list[n+1:2*n+1])
+
+
+while True:
+    n = int(input())
+    if(n==0): break
+    print(find_prime_2n(n))
 
 
 
