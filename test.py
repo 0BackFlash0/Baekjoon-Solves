@@ -1,46 +1,48 @@
 import sys
 input = sys.stdin.readline
 
-def N_queen(n):
-    
-    board = [0] * n
-    result_list = [0 for _ in range((n-1)//2+1)]
-    idx = 0
+def gcd(_a, _b):
 
-    def recursive_queen(level):
-        if(level==n):
-            result_list[idx] += 1
-            return
+    a = _a
+    b = _b
 
+    if(b>a):
+        b = _a
+        a = _b
 
-        for row in range(n):
-            board[level] = row
-            is_available = True
-
-            for lv in range(level):
-                if(board[level] == board[lv] or abs(board[level] - board[lv]) == level - lv):
-                    is_available = False
-                    break
-            
-            if(is_available):
-                recursive_queen(level+1)
-    
-    # 절반만 계산한 뒤, 나머지는 곱해서 계산
-    #체스판의 절반만큼 순회
-    for x in range((n-1)//2+1):
-        idx = x
-        board[0] = x
-        recursive_queen(1)
-
-    if(n%2==0):
-        return sum(result_list) * 2
+    if(a%b==0):
+        return b
     else:
-        return sum(result_list[:-1]) * 2 + result_list[-1]
+        return gcd(b, a%b)
 
+def get_div(n):
+    divisors = []
+    divisors_back = []
+
+    for i in range(1, int(n**(1/2))+1):
+        if(n%i == 0):
+            divisors.append(i)
+            if(i!=n//i):
+                divisors_back.append(n//i)
+
+    return divisors + divisors_back[::-1]
 
 
 n = int(input())
-print(N_queen(n))
+
+# 초기 2개값에 대해 계산
+nums = []
+nums.append(int(input()))
+nums.append(int(input()))
+available_gcd = abs(nums[-2]-nums[-1])
+
+for _ in range(n-2):
+    nums.append(int(input()))
+    available_gcd = gcd(available_gcd, abs(nums[-2]-nums[-1]))
+    # print(available_gcd, abs(nums[-2]-nums[-1]))
         
 
+divs = get_div(available_gcd)
+
+print(" ".join(map(str, divs[1:])))
 
