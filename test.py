@@ -1,33 +1,44 @@
 import sys
 input = sys.stdin.readline
 
-def available_set(r, c, sq):
+def available_set(r, c, box):
 
     r_set = groups["row"][r].leak
     c_set = groups["row"][c].leak
-    sq_set = groups["row"][sq].leak
+    box_set = groups["row"][box].leak
 
-    result = r_set.intersection(c_set).intersection(sq_set)
+    result = r_set.intersection(c_set).intersection(box_set)
 
     return result
 
 class sudoku_node:
     
-    def __init__(self, value, r, c):
-        self.r = r
-        self.c = c
+    def __init__(self, r_group, c_group, box_group):
+        self.r = r_group
+        self.c = c_group
+        self.box = box_group
+
+    def get_available_list(self, target="all"):
+        if(target=="row"):
+            return self.r.numbers
+        elif(target=="col"):
+            return self.c.numbers
+        elif(target=="box"):
+            return self.box.numbers
+        elif(target=="all"):
+            return [r_bool and c_bool and box_bool for r_bool, c_bool, box_bool in zip(self.r, self.c, self.box)]
 
 class sudoku_group:
     
     def __init__(self):
-        self.leak = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        self.numbers = [True, True, True, True, True, True, True, True, True]
         self.empties = []
 
-    def add_empty(self, r, c, sq):
-        self.empties.append((r, c, sq))
+    def add_empty(self, node):
+        self.empties.append(node)
 
     def add_available(self, num):
-        self.leak.remove(num)
+        self.numbers[num-1] = False
 
 
     
@@ -40,21 +51,21 @@ class sudoku_group:
 
 empties = []
 
-groups = {"row" : [], "col" : [], "sq" : []}
+groups = {"row" : [], "col" : [], "box" : []}
 
 for r in range(9):
     for c, num in enumerate(map(int, input().split())):
-        sq = 3*(r//3) + c//3
+        box = 3*(r//3) + c//3
         
         if(num!=0):
             groups["row"][r].add_available(num)
             groups["col"][c].add_available(num)
-            groups["sq"][sq].add_available(num)
+            groups["box"][box].add_available(num)
         else:
             groups["row"][r].add_empty(num)
             groups["col"][c].add_empty(num)
-            groups["sq"][sq].add_empty(num)
-            empties.append((r, c, sq))
+            groups["box"][box].add_empty(num)
+            empties.append((r, c, box))
 
 
 while empties:
@@ -66,7 +77,7 @@ while empties:
         val = tuple(empty_set)[0]
         groups["row"][empty[0]].add_available(val)
         groups["col"][empty[1]].add_available(val)
-        groups["sq"][empty[2]].add_available(val)
+        groups["box"][empty[2]].add_available(val)
 
     elif(len(empty_set)>2):
         
