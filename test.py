@@ -1,26 +1,35 @@
 import sys
 input = sys.stdin.readline
 
+def nge(num_list):
 
-v, e = map(int. input().split())
-start = int(input())
+    length = len(num_list)
+    results = [0] * length
+    stack = []
+    #stack에 저장 : (i, val)
 
-class node:
+    for i in range(length):
+        
+        n = num_list[i]
+        
+        while(len(stack)!=0 and stack[-1][1]<n):
+            idx, v = stack.pop()
+            results[idx] = n
+        
+        stack.append((i, n))
 
-    def __init__(self):
-        self.parent = None
+    while(len(stack)>0):
+        idx, v = stack.pop()
+        results[idx] = -1
 
-    def setParent(self, parent):
-        self.parent = parent
+    return results
 
-    def checkRoot(self):
+        
 
-        if(self.parent == None):
-            return self
+n = int(input())
+num_list = list(map(int, input().split()))
 
-        root = self.checkRoot(self.parent)
-        self.parent = root
+results = nge(num_list)
 
-        return root
+print(" ".join(map(str, results)))
 
-    
