@@ -1,35 +1,54 @@
 import sys
+import math
 input = sys.stdin.readline
 
-def nge(num_list):
+# 벡터 : (x2 - x1), (y2 - y1)
+# 완전 탐색
+# nCn/2
 
-    length = len(num_list)
-    results = [0] * length
-    stack = []
-    #stack에 저장 : (i, val)
+def vector_matching(length, x_list, y_list):
 
-    for i in range(length):
+    weight_map = [1] * length
+
+    def recursive_matching(remain_length, pos):
         
-        n = num_list[i]
-        
-        while(len(stack)!=0 and stack[-1][1]<n):
-            idx, v = stack.pop()
-            results[idx] = n
-        
-        stack.append((i, n))
+        if(remain_length>=1):
 
-    while(len(stack)>0):
-        idx, v = stack.pop()
-        results[idx] = -1
+            min_vector = float("inf")
 
-    return results
+            for i in range(pos, length - remain_length + 1):
+                weight_map[i] = -1
 
-        
+                recursive_result = recursive_matching(remain_length-1, i+1)
+                if(recursive_result<min_vector):
+                    min_vector = recursive_result
+                
+                weight_map[i] = 1
+            
+            return min_vector
+        else:
+            x_sum = 0
+            y_sum = 0
 
-n = int(input())
-num_list = list(map(int, input().split()))
+            for i in range(length):
+                x_sum += weight_map[i] * x_list[i]
+                y_sum += weight_map[i] * y_list[i]
 
-results = nge(num_list)
+            return math.sqrt(math.pow(x_sum, 2) + math.pow(y_sum, 2))
 
-print(" ".join(map(str, results)))
+    return recursive_matching(length, 0) 
 
+test_case = int(input())
+
+for _ in range(test_case):
+    length = int(input())
+    x_list = [0] * length
+    y_list = [0] * length
+
+    for idx in range(length):
+        x, y = map(int, input().split())
+
+        x_list[idx] = x
+        y_list[idx] = y
+
+    print(vector_matching(length, x_list, y_list))
